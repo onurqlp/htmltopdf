@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML to PDF Converter</title>
+    <script src="./libs/jspdf.umd.min.js"></script>
+    <script src="./libs/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <h1>HTML to PDF Converter</h1>
@@ -11,8 +14,6 @@
     <button id="convert">Convert to PDF</button>
     <div id="output"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
     <script>
         document.getElementById('convert').addEventListener('click', async () => {
             const files = document.getElementById('upload').files;
@@ -30,7 +31,7 @@
                 }
 
                 const content = await file.text();
-                const sanitizedContent = DOMPurify.sanitize(content); // Güvenli hale getirme
+                const sanitizedContent = DOMPurify.sanitize(content);
                 const pdf = new jsPDF();
                 pdf.html(sanitizedContent, {
                     callback: (pdf) => {
