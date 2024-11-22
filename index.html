@@ -4,6 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML to PDF Converter</title>
+    <!-- Dahili CSS Stilleri -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        input, button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <!-- Gerekli Kütüphaneler -->
     <script src="./libs/jspdf.umd.min.js"></script>
     <script src="./libs/purify.min.js"></script>
     <script src="./libs/html2canvas.min.js"></script>
@@ -31,11 +59,16 @@
                 }
 
                 const content = await file.text();
-                const sanitizedContent = DOMPurify.sanitize(content);
+                const sanitizedContent = DOMPurify.sanitize(content); // HTML güvenli hale getirildi
                 const pdf = new jsPDF();
+
                 pdf.html(sanitizedContent, {
+                    html2canvas: {
+                        scale: 2, // Daha yüksek çözünürlük
+                        useCORS: true // Harici kaynakları kullanmak için
+                    },
                     callback: (pdf) => {
-                        pdf.save(file.name.replace('.html', '.pdf'));
+                        pdf.save(file.name.replace('.html', '.pdf')); // PDF kaydediliyor
                     }
                 });
             }
