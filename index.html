@@ -12,6 +12,7 @@
     <div id="output"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
     <script>
         document.getElementById('convert').addEventListener('click', async () => {
             const files = document.getElementById('upload').files;
@@ -29,8 +30,9 @@
                 }
 
                 const content = await file.text();
+                const sanitizedContent = DOMPurify.sanitize(content); // Güvenli hale getirme
                 const pdf = new jsPDF();
-                pdf.html(content, {
+                pdf.html(sanitizedContent, {
                     callback: (pdf) => {
                         pdf.save(file.name.replace('.html', '.pdf'));
                     }
