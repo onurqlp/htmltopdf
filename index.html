@@ -30,6 +30,9 @@
         button:hover {
             background-color: #45a049;
         }
+        #hidden-div {
+            display: none;
+        }
     </style>
     <!-- Gerekli Kütüphaneler -->
     <script src="./libs/jspdf.umd.min.js"></script>
@@ -40,7 +43,7 @@
     <h1>HTML to PDF Converter</h1>
     <input type="file" id="upload" multiple accept=".html">
     <button id="convert">Convert to PDF</button>
-    <div id="output"></div>
+    <div id="hidden-div"></div> <!-- Geçici HTML içeriği için görünmez bir alan -->
 
     <script>
         document.getElementById('convert').addEventListener('click', async () => {
@@ -59,37 +62,30 @@
                 }
 
                 const content = await file.text();
-                const sanitizedContent = DOMPurify.sanitize(content); // HTML güvenli hale getirildi
-                
-                // PDF için A4 boyutlarını ayarlıyoruz
+                const sanitizedContent = DOMPurify.sanitize(content);
+
+                // HTML içeriğini geçici olarak bir `div` içerisine ekliyoruz
+                const hiddenDiv = document.getElementById('hidden-div');
+                hiddenDiv.innerHTML = sanitizedContent;
+
                 const pdf = new jsPDF({
-                    orientation: "portrait", // Dikey sayfa
+                    orientation: "portrait",
                     unit: "mm",
                     format: "a4"
                 });
 
-                const canvas = await html2canvas(document.createElement("div"), {
-                    scale: 2,
-                    useCORS: true
-                });
-
-                // A4 boyutuna göre sayfa boyutlarını hesapla
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const pageHeight = pdf.internal.pageSize.getHeight();
-
-                pdf.html(sanitizedContent, {
+                pdf.html(hiddenDiv, {
                     html2canvas: {
                         scale: 2,
                         useCORS: true
                     },
-                    x: 10,
-                    y: 10,
-                    width: pageWidth - 20, // Kenar boşluğu
-                    height: pageHeight - 20,
                     callback: (pdf) => {
                         pdf.save(file.name.replace('.html', '.pdf'));
                     }
                 });
+
+                // İşlem tamamlandıktan sonra `div` içeriğini temizle
+                hiddenDiv.innerHTML = '';
             }
         });
     </script>
